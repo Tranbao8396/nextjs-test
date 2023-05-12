@@ -9,11 +9,10 @@ import Link from 'next/link';
 const name = 'Bao';
 export const siteTitle = 'Next.js Sample Website';
 
-export default function Layout({ children, home }) {
+export default function Layout({ children, page }) {
   return (
     <>
-      <Header />
-
+      <Header page = {page} />
       <div className={styles.container}>
         <Head>
           <link rel="icon" href="/favicon.ico" />
@@ -32,7 +31,7 @@ export default function Layout({ children, home }) {
         </Head>
 
         <header className={styles.header}>
-          {home ? (
+          {page === 'home' ? (
             <>
               <Image
                 priority
@@ -44,30 +43,12 @@ export default function Layout({ children, home }) {
               />
               <h2 className={utilStyles.heading2Xl}>{name}</h2>
             </>
-          ) : (
-            <>
-              <Link href="/">
-                <Image
-                  priority
-                  src="/images/profile.jpg"
-                  className={utilStyles.borderCircle}
-                  height={108}
-                  width={108}
-                  alt=""
-                />
-              </Link>
-              <h2 className={utilStyles.headingLg}>
-                <Link href="/" className={utilStyles.colorInherit}>
-                  {name}
-                </Link>
-              </h2>
-            </>
-          )}
+          ):''}
         </header>
 
         <main>{children}</main>
 
-        {!home && (
+        {page !== 'home' && (
           <div className={styles.backToHome}>
             <Link href="/">← Back to home</Link>
           </div>

@@ -1,12 +1,11 @@
 import Head from 'next/head';
 import Layout, { siteTitle } from '../components/layout';
 import utilStyles from '../styles/module/utils.module.scss';
-import Link from 'next/link';
-import { getSortedPostsData } from '../data/posts';
+import Formvalidation from '../validation/form';
 
-export default function Home({ allPostsData }) {
+export default function Home() {
   return (
-    <Layout home>
+    <Layout page='home'>
       <Head>
         <title>{siteTitle}</title>
       </Head>
@@ -20,27 +19,9 @@ export default function Home({ allPostsData }) {
         </p>
       </section>
 
-      <section className={`${utilStyles.headingMd} ${utilStyles.padding1px}`}>
-        <h2 className={utilStyles.headingLg}>Blog</h2>
-        <ul className={utilStyles.list}>
-          {allPostsData.map((post) => (
-            <li className={utilStyles.listItem} key={post.id}>
-              <Link href={`/posts/${post.slug}`}>
-                {post.title}
-              </Link>
-            </li>
-          ))}
-        </ul>
+      <section className={`${utilStyles.headingMd} ${utilStyles.sction_block} mt-5`}>
+        <Formvalidation />
       </section>
     </Layout>
   )
 };
-
-export async function getStaticProps() {
-  const allPostsData = await getSortedPostsData();
-  return {
-    props: {
-      allPostsData,
-    }
-  }
-}

@@ -1,7 +1,7 @@
 import Layout from '../../components/layout';
 import Head from 'next/head';
 import { getAllPostSlug, getPostData } from '../../data/posts';
-import utilStyles from '../../styles/utils.module.scss';
+import utilStyles from '../../styles/module/utils.module.scss';
 
 export async function getStaticPaths() {
   const paths = await getAllPostSlug();
