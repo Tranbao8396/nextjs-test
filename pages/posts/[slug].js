@@ -3,7 +3,7 @@ import Head from 'next/head';
 import { getAllPostSlug, getPostData } from '../../data/posts';
 import utilStyles from '../../styles/module/utils.module.scss';
 
-export async function getStaticPaths() {
+export async function getServerSidePaths() {
   const paths = await getAllPostSlug();
   return {
     paths,
@@ -11,7 +11,7 @@ export async function getStaticPaths() {
   };
 }
 
-export async function getStaticProps({ params }) {
+export async function getServerSideProps({ params }) {
   const postData = await getPostData(params.slug);
   return {
     props: {
