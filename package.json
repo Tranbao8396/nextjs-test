@@ -10,6 +10,7 @@
     "bootstrap": "^5.2.3",
     "clsx": "^1.2.1",
     "date-fns": "^2.30.0",
+    "dotenv": "^16.0.3",
     "gray-matter": "^4.0.3",
     "jquery": "^3.7.0",
     "next": "latest",
@@ -20,6 +21,7 @@
     "remark-html": "^15.0.2"
   },
   "devDependencies": {
+    "@types/bootstrap": "^5.2.6",
     "sass": "^1.62.1"
   }
 }
