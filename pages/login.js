@@ -47,6 +47,8 @@ export default function LoginPage({ csrfToken }) {
 
             <button type="submit" className="btn btn-primary">Sign in</button>
           </form>
+
+          <button type="button" className="btn btn-light mt-3" onClick={()=>signIn('google')}>Sign in with Google</button>
         </div>
       </section>
     </Layout>

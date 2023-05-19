@@ -40,10 +40,10 @@ export default NextAuth({
     signIn: '/login',
   },
 
-  // providers: [
-  //   GoogleProvider({
-  //     clientId: process.env.GOOGLE_ID,
-  //     clientSecret: process.env.GOOGLE_SECRET,
-  //   }),
-  // ],
+  providers: [
+    GoogleProvider({
+      clientId: process.env.GOOGLE_ID,
+      clientSecret: process.env.GOOGLE_SECRET,
+    }),
+  ],
 });
