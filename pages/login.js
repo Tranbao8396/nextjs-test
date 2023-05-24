@@ -11,10 +11,10 @@ export default function LoginPage({ csrfToken }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const _target = e.target;
-    const email = _target.email.value;
+    const name = _target.name.value;
     const password = _target.password.value;
     const result = await signIn("credentials", {
-      email,
+      name,
       password,
       redirect: false,
     });
@@ -26,7 +26,7 @@ export default function LoginPage({ csrfToken }) {
   };
 
   return (
-    <Layout page='posts-page' >
+    <Layout page='login-page'>
       <section className="block">
         <div className="container">
           <h2 className={utilStyles.headingLg}>Login</h2>
@@ -36,8 +36,8 @@ export default function LoginPage({ csrfToken }) {
 
             <input name="csrfToken" type="hidden" defaultValue={csrfToken} />
             <div className='mb-3'>
-              <label className="form-label">Email</label>
-              <input name="email" className="form-control" type="text" />
+              <label className="form-label">Name</label>
+              <input name="name" className="form-control" type="text" />
             </div>
 
             <div className='mb-3'>

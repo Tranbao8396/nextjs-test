@@ -1,10 +1,10 @@
 export async function getSortedPostsData() {
-  const res = await fetch('http://localhost:3000/api/hello');
+  const res = await fetch('http://localhost:3001/courses');
   return res.json();
 }
 
 export async function getAllPostSlug() {
-  const res = await fetch('http://localhost:3000/api/hello');
+  const res = await fetch('http://localhost:3001/courses');
   const posts = await res.json();
   return posts.map((post) => {
     return {
@@ -16,17 +16,6 @@ export async function getAllPostSlug() {
 }
 
 export async function getPostData(slug) {
-  const res = await fetch('http://localhost:3000/api/hello');
-  const posts = await res.json();
-  let postDetail = [];
-  posts.map((post) => {
-    if (post.slug === slug) {
-      postDetail = {
-        content: post.content,
-        title: post.title,
-      }
-    };
-  });
-
-  return postDetail;
+  const res = await fetch(`http://localhost:3001/courses/${slug}`);
+  return res.json();
 }

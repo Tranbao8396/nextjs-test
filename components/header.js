@@ -27,6 +27,9 @@ export default function Header({ page }) {
                 <Link className={`nav-link ${clsx({ "active": page === 'posts-page', })}`} href="/posts">Post Page</Link>
               </li>
               <li className="nav-item">
+                <Link className={`nav-link ${clsx({ "active": page === 'contact-page', })}`} href="/contact">Contact</Link>
+              </li>
+              <li className="nav-item">
                 {
                   session ? (
                     <>
