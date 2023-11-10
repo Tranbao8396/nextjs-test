@@ -18,10 +18,6 @@ export default function Home() {
           <a href="https://nextjs.org/learn">our Next.js tutorial</a>.)
         </p>
       </section>
-
-      <section className={`${utilStyles.headingMd} ${utilStyles.sction_block} mt-5`}>
-        <Formvalidation />
-      </section>
     </Layout>
   )
 };

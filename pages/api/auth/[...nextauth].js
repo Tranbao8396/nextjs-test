@@ -13,13 +13,14 @@ export default NextAuth({
         password: { label: "Password", type: "password" }
       },
 
-      async authorize(credentials, red) {
+      async authorize(credentials, req) {
         const res = await fetch("http://localhost:3001/users/check", {
           method: 'POST',
           body: JSON.stringify(credentials),
           headers: { "Content-Type": "application/json" }
         })
         const user = await res.json()
+
         if (res.ok && user) {
           return user;
         } else {

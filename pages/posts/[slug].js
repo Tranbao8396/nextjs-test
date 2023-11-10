@@ -12,10 +12,10 @@ export async function getServerSidePaths() {
 }
 
 export async function getServerSideProps({ params }) {
-  const postData = await getPostData(params.slug);
+  const postDetail = await getPostData(params.slug);
   return {
     props: {
-      postDetail: JSON.parse(JSON.stringify(postData)),
+      postDetail,
     },
   };
 }

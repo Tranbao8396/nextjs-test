@@ -12,6 +12,7 @@
     "@react-email/section": "^0.0.9",
     "@react-email/text": "^0.0.5",
     "axios": "^1.4.0",
+    "bcrypt": "^5.1.0",
     "bootstrap": "^5.2.3",
     "clsx": "^1.2.1",
     "date-fns": "^2.30.0",

@@ -4,7 +4,7 @@ import { clsx } from 'clsx';
 import { signIn, signOut, useSession } from "next-auth/react";
 
 export default function Header({ page }) {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession()
 
   return (
     <div className={styles.menu}>

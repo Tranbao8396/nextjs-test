@@ -14,7 +14,7 @@ export default function ContactPage() {
     const subject = _target.subject.value;
     const message = _target.message.value;
 
-    let valid = true
+    let valid = true;
 
     if (!email) {
       valid = false;
@@ -59,7 +59,7 @@ export default function ContactPage() {
         <div className="container">
           <h2 className={utilStyles.headingLg}>Contact</h2>
 
-          <form method='post' onSubmit={handleSubmit} action='/api/send-email'>
+          <form method='post' onSubmit={handleSubmit}>
             <p className='badge text-bg-secondary'>{responseMessage.message}</p>
 
             <div className='mb-3'>
