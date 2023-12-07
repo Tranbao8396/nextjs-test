@@ -64,12 +64,12 @@ export default function ContactPage() {
 
             <div className='mb-3'>
               <label htmlFor='email' className='form-label'>Email</label>
-              <input className='form-control' name='email' type='email' id='email' />
+              <input className='form-control' name='email' type='email' id='email' required/>
             </div>
 
             <div className='mb-3'>
               <label htmlFor='subject' className='form-label'>Subject</label>
-              <input className='form-control' name='subject' type='text' id='subject' />
+              <input className='form-control' name='subject' type='text' id='subject' required/>
             </div>
 
             <div className='mb-3'>
