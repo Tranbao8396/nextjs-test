@@ -1,0 +1,54 @@
+{
+  "projectInfo": {
+    "owner": "Tranbao8396",
+    "repo": "nextjs-test",
+    "defaultBranch": "main",
+    "isNextjs": true,
+    "hasSrcDir": false,
+    "routerType": "pages",
+    "scannedAt": "2026-06-29T02:27:09.593Z"
+  },
+  "configs": {
+    "packageJson": {
+      "dependencies": {
+        "@popperjs/core": "^2.11.7",
+        "@react-email/container": "^0.0.8",
+        "@react-email/html": "^0.0.4",
+        "@react-email/section": "^0.0.9",
+        "@react-email/text": "^0.0.5",
+        "axios": "^1.4.0",
+        "bcrypt": "^5.1.0",
+        "bootstrap": "^5.2.3",
+        "clsx": "^1.2.1",
+        "date-fns": "^2.30.0",
+        "dotenv": "^16.0.3",
+        "gray-matter": "^4.0.3",
+        "jquery": "^3.7.0",
+        "next": "latest",
+        "next-auth": "^4.22.1",
+        "nodemailer": "^6.9.2",
+        "react": "18.2.0",
+        "react-dom": "18.2.0",
+        "react-email": "^1.9.3",
+        "remark": "^14.0.2",
+        "remark-html": "^15.0.2"
+      },
+      "devDependencies": {
+        "@types/bootstrap": "^5.2.6",
+        "@types/nodemailer": "^6.4.8",
+        "sass": "^1.62.1"
+      },
+      "scripts": {
+        "dev": "next dev",
+        "build": "next build",
+        "start": "next start"
+      }
+    },
+    "layouts": [
+      {
+        "path": "pages/_app.js",
+        "content": "import { SessionProvider } from \"next-auth/react\";\nimport '../styles/globals.scss';\nimport { useEffect } from \"react\";\n\nexport default function App({ Component, pageProps: { session, ...pageProps }}) {\n  useEffect(() => {\n    require(\"bootstrap/dist/js/bootstrap.bundle.min.js\");\n  }, []);\n\n  return (\n    <SessionProvider session={session}>\n      <Component {...pageProps}/>\n    </SessionProvider>\n  );\n}"
+      }
+    ]
+  }
+}
