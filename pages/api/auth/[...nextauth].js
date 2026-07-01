@@ -1,30 +1,26 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
+import { verifyUserCredentials } from "../../../data/mockUsers";
 
-export default NextAuth({
+export const authOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   providers: [
     CredentialsProvider({
       name: "Test",
 
       credentials: {
-        name: { label: "Name", type: "text", placeholder: "aaa@aaa.com" },
+        name: { label: "Name", type: "text", placeholder: "demo" },
         password: { label: "Password", type: "password" }
       },
 
       async authorize(credentials, req) {
-        const res = await fetch("http://localhost:3001/users/check", {
-          method: 'POST',
-          body: JSON.stringify(credentials),
-          headers: { "Content-Type": "application/json" }
-        })
-        const user = await res.json()
+        const user = await verifyUserCredentials(credentials?.name, credentials?.password);
 
-        if (res.ok && user) {
+        if (user) {
           return user;
         } else {
-          return null
+          return null;
         }
       }
     }),
@@ -38,4 +34,25 @@ export default NextAuth({
   pages: {
     signIn: '/login',
   },
-});
+
+  callbacks: {
+    async jwt({ token, user, account }) {
+      if (user) {
+        token.id = user.id || token.sub;
+        token.roles = user.roles || "user";
+        token.provider = user.provider || account?.provider || "credentials";
+      }
+
+      return token;
+    },
+
+    async session({ session, token }) {
+      session.user.id = token.id || token.sub;
+      session.user.roles = token.roles || "user";
+      session.user.provider = token.provider || "credentials";
+      return session;
+    },
+  },
+};
+
+export default NextAuth(authOptions);

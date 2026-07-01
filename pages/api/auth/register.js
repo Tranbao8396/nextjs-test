@@ -11,5 +11,5 @@ export default async function handler(req, res) {
     return res.status(result.status).json({ message: result.message });
   }
 
-  return res.status(200).json({ message: "created", user: result.user });
+  return res.status(result.status).json({ message: "created", user: result.user });
 }

@@ -29,19 +29,25 @@ export default function Header({ page }) {
               <li className="nav-item">
                 <Link className={`nav-link ${clsx({ "active": page === 'contact-page', })}`} href="/contact">Contact</Link>
               </li>
-              <li className="nav-item">
-                {
-                  session ? (
-                    <>
-                      <button className="btn btn-secondary" onClick={() => signOut()}>Logout</button>
-                    </>
-                  ) : (
-                    <>
-                      <button className="btn btn-primary" onClick={() => signIn()}>Login</button>
-                    </>
-                  )
-                }
-              </li>
+              {session ? (
+                <>
+                  <li className="nav-item">
+                    <Link className={`nav-link ${clsx({ "active": page === 'profile-page', })}`} href="/profile">Profile</Link>
+                  </li>
+                  <li className="nav-item">
+                    <button className="btn btn-secondary" onClick={() => signOut()}>Logout</button>
+                  </li>
+                </>
+              ) : (
+                <>
+                  <li className="nav-item">
+                    <Link className={`nav-link ${clsx({ "active": page === 'register-page', })}`} href="/register">Register</Link>
+                  </li>
+                  <li className="nav-item">
+                    <button className="btn btn-primary" onClick={() => signIn()}>Login</button>
+                  </li>
+                </>
+              )}
             </ul>
           </div>
         </div>

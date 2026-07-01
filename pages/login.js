@@ -1,6 +1,7 @@
 import Layout from '../components/layout';
 import utilStyles from '../styles/module/utils.module.scss';
 import { useRouter } from "next/router";
+import Link from 'next/link';
 import React, { useState } from "react";
 import { getCsrfToken, signIn } from "next-auth/react";
 
@@ -49,6 +50,10 @@ export default function LoginPage({ csrfToken }) {
           </form>
 
           <button type="button" className="btn btn-light mt-3" onClick={()=>signIn('google')}>Sign in with Google</button>
+
+          <p className='mt-3'>
+            Need an account? <Link href='/register'>Register</Link>
+          </p>
         </div>
       </section>
     </Layout>
