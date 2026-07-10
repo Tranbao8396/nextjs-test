@@ -15,8 +15,8 @@ export default async function handler(req, res) {
   const pass_crypt = await bcrypt.hash(password, 5)
   const data = {
     name: body.name,
-    password: pass_crypt,
     roles: body.roles,
+    password: pass_crypt
   }
 
   const create = await fetch('http://localhost:3001/users', {
