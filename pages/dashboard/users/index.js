@@ -18,7 +18,6 @@ export default function UserPages({ allUsersData }) {
   const router = useRouter();
   const handledelete = async (e) => {
     e.preventDefault();
-    console.log(e.target.id);
 
     const req = await axios({
       method: 'delete',
@@ -34,7 +33,10 @@ export default function UserPages({ allUsersData }) {
     <DashboardLayout>
       <section className="section-dashboard">
         <div className="container">
-          <h2 className={utilStyles.headingLg}>All Users</h2>
+          <div className='d-flex justify-content-between align-items-center mb-3'>
+            <h2 className={utilStyles.headingLg}>All Users</h2>
+            <Link href='/dashboard/users/add-user' className='btn btn-primary'>Create User</Link>
+          </div>
 
           <div className='table-responsive'>
             <table className='table table-striped table-bordered'>
@@ -52,7 +54,7 @@ export default function UserPages({ allUsersData }) {
                     <td>{user.id}</td>
                     <td>{user.name}</td>
                     <td>
-                      <Link href={`/dashboard/users/${user.id}`} className='btn btn-primary'>Edit/View</Link>
+                      <Link href={`/dashboard/users/${user.id}`} className='btn btn-primary'>Edit</Link>
                       <Link href='#' id={user.id} className='ms-1 btn btn-secondary' onClick={handledelete}>Delete</Link>
                     </td>
                   </tr>
