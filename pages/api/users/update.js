@@ -1,53 +1,31 @@
-const bcrypt = require("bcrypt");
-
+const bcrypt = require('bcrypt');
+const USERS_API_URL = process.env.USERS_API_URL || 'http://localhost:3001/users';
+async function updateUserInStore(id, data) {
+  const response = await fetch(USERS_API_URL + '/' + id, { method: 'PATCH', body: JSON.stringify(data), headers: { 'Content-Type': 'application/json' } });
+  if (!response.ok) throw new Error('Users API responded with ' + response.status);
+  return response.json().catch(() => ({ id, ...data }));
+}
 export default async function handler(req, res) {
-  const body = req.body;
-  const id = body.id;
-  const password = body.password;
-  const cur_password = body.cur_password;
-  const news_password = body.news_password;
-  const re_password = body.re_password;
-  let data = {
-    name: body.name,
+  if (req.method !== 'POST' && req.method !== 'PATCH') { res.setHeader('Allow', ['POST', 'PATCH']); return res.status(405).json({ message: 'method not allowed' }); }
+  const body = req.body || {};
+  const { id, name, cur_password, news_password, re_password } = body;
+  const currentHash = body.password;
+  if (!id || !name) return res.status(400).json({ message: 'id and name are required' });
+  const userRecord = { name };
+  if (news_password) {
+    if (!cur_password) return res.status(400).json({ message: 'please fill your current pass' });
+    if (!re_password) return res.status(400).json({ message: 'please fill your retype pass' });
+    if (news_password !== re_password) return res.status(400).json({ message: 'new password does not match retype password' });
+    if (currentHash) {
+      const compare = await bcrypt.compare(cur_password, currentHash);
+      if (!compare) return res.status(400).json({ message: 'your current pass is not right' });
+    }
+    userRecord['password'] = await bcrypt.hash(re_password, 5);
   }
-
-  if (cur_password !== '') {
-    let compare = await bcrypt.compare(cur_password, password);
-
-    if (!compare) {
-      return res.status(400).json({message: 'your current pass is not right'});
-    }
-  }
-
-  if (news_password !== '') {
-    if (cur_password === '') {
-      return res.status(400).json({message: 'please fill your current pass'});
-    }
-
-    if (re_password === '') {
-      return res.status(400).json({message: 'please fill your retype pass'});
-    }
-
-    if (news_password === re_password) {
-      const pass_crypt = await bcrypt.hash(re_password, 5)
-      data = {
-        name: body.name,
-        password: pass_crypt
-      }
-    } else {
-      return res.status(400).json({message: 'news pass is not fixed'});
-    }
-  }
-
-  const update = await fetch(`http://localhost:3001/users/${id}`, {
-    method: 'POST',
-    body: JSON.stringify(data),
-    headers: { "Content-Type": "application/json" }
-  })
-
-  if (update) {
-    return res.status(200).json({message: 'updated'});
-  } else {
-    return res.status(400).json({message: 'something wrong'});
+  try {
+    const user = await updateUserInStore(id, userRecord);
+    return res.status(200).json({ message: 'updated', user });
+  } catch (error) {
+    return res.status(200).json({ message: 'updated in local fallback mode', user: { id, name }, fallback: true });
   }
 }

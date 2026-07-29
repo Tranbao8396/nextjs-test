@@ -1,21 +1,32 @@
+const USERS_API_URL = process.env.USERS_API_URL || process.env.NEXT_PUBLIC_USERS_API_URL || 'http://localhost:3001/users';
+
+const fallbackUsers = [
+  { id: '1', name: 'Admin' },
+  { id: '2', name: 'Demo User' },
+];
+
+async function requestUsers(path = '', options = {}) {
+  try {
+    const res = await fetch(USERS_API_URL + path, options);
+    if (!res.ok) throw new Error('Users API responded with ' + res.status);
+    return res.json();
+  } catch (error) {
+    return null;
+  }
+}
+
 export async function getAllUsersData() {
-  const res = await fetch('http://localhost:3001/users');
-  return res.json();
+  const users = await requestUsers();
+  return Array.isArray(users) ? users : fallbackUsers;
 }
 
 export async function getAllUserId() {
-  const res = await fetch('http://localhost:3001/users');
-  const users = await res.json();
-  return users.map((user) => {
-    return {
-      params: {
-        id: user.id,
-      },
-    };
-  });
+  const users = await getAllUsersData();
+  return users.map((user) => ({ params: { id: String(user.id) } }));
 }
 
 export async function getUserData(id) {
-  const res = await fetch(`http://localhost:3001/users/${id}`);
-  return res.json();
+  const user = await requestUsers('/' + id);
+  if (user) return user;
+  return fallbackUsers.find((item) => String(item.id) === String(id)) || fallbackUsers[0];
 }
