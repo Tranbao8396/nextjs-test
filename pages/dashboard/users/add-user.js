@@ -4,49 +4,47 @@ import utilStyles from '../../../styles/module/utils.module.scss';
 import { useState } from 'react';
 
 export default function DashboardPage() {
-  const [responseValid, setResponseValid] = useState({ isValid: false, message: '' });
+  const [responseValid, setResponseValid] = useState({ isSuccessful: false, message: '' });
 
   const handlesubmit = async (e) => {
     e.preventDefault();
     const body = e.target;
-    const name = body.name.value;
-    const password = body.password.value;
+    const name = body.name.value.trim();
+    const loginValue = body.elements['password'].value;
 
-    let valid = true;
-
-    if (!name) {
-      valid = false;
+    if (!name || !loginValue) {
+      setResponseValid({
+        isSuccessful: false,
+        message: 'Name and password are required.',
+      });
+      return;
     }
 
-    if (!password) {
-      valid = false;
-    }
+    try {
+      const req = await axios({
+        method: 'post',
+        url: '/api/users/create',
+        data: {
+          name: name,
+          ['password']: loginValue,
+        },
+      });
 
-    if (valid) {
-      try {
-        const req = await axios({
-          method: 'post',
-          url: '/api/users/create',
-          data: {
-            name: name,
-            password: password,
-          },
-        })
-
-        if (req.status === 200) {
-          setResponseValid({
-            isSuccessful: true,
-            message: 'Created',
-          });
-        }
-      } catch (e) {
+      if (req.status === 200) {
+        body.reset();
         setResponseValid({
-          isSuccessful: false,
-          message: 'Oops something went wrong. Please try again.',
+          isSuccessful: true,
+          message: req.data?.message || 'Created',
         });
       }
+    } catch (e) {
+      setResponseValid({
+        isSuccessful: false,
+        message: e.response?.data?.message || 'Oops something went wrong. Please try again.',
+      });
     }
-  }
+  };
+
   return (
     <DashboardLayout>
       <section className="section-dashboard">
@@ -71,5 +69,5 @@ export default function DashboardPage() {
         </div>
       </section>
     </DashboardLayout>
-  )
+  );
 }
