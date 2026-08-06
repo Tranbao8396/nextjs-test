@@ -1,6 +1,7 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
+import { checkUserCredentials } from '../../../data/users';
 
 export default NextAuth({
   secret: process.env.NEXTAUTH_SECRET,
@@ -13,19 +14,9 @@ export default NextAuth({
         password: { label: "Password", type: "password" }
       },
 
-      async authorize(credentials, req) {
-        const res = await fetch("http://localhost:3001/users/check", {
-          method: 'POST',
-          body: JSON.stringify(credentials),
-          headers: { "Content-Type": "application/json" }
-        })
-        const user = await res.json()
-
-        if (res.ok && user) {
-          return user;
-        } else {
-          return null
-        }
+      async authorize(credentials) {
+        const user = await checkUserCredentials(credentials || {});
+        return user || null;
       }
     }),
 
