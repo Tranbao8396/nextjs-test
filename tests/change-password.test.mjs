@@ -7,7 +7,7 @@ import {
 } from '../data/users.js';
 
 async function createFixtureUser(name) {
-  const password = 'CurrentPass1!';
+  const password = 'test-current-password';
   const result = await createMockUser({ name, password });
   assert.equal(result.ok, true);
   return { id: result.user.id, name, password };
@@ -18,8 +18,8 @@ test('changes the authenticated mock user password', async () => {
   const result = await changeMockUserPassword({
     userId: fixture.id,
     currentPassword: fixture.password,
-    newPassword: 'NewPassword2!',
-    confirmPassword: 'NewPassword2!',
+    newPassword: 'test-new-password',
+    confirmPassword: 'test-new-password',
   });
 
   assert.deepEqual(result, {
@@ -29,21 +29,21 @@ test('changes the authenticated mock user password', async () => {
     message: 'password changed successfully',
   });
   assert.equal(await checkUserCredentials({ name: fixture.name, password: fixture.password }), null);
-  assert.equal((await checkUserCredentials({ name: fixture.name, password: 'NewPassword2!' }))?.id, fixture.id);
+  assert.equal((await checkUserCredentials({ name: fixture.name, password: 'test-new-password' }))?.id, fixture.id);
 });
 
 test('rejects an invalid current password without mutating credentials', async () => {
   const fixture = await createFixtureUser('password-invalid-current');
   const result = await changeMockUserPassword({
     userId: fixture.id,
-    currentPassword: 'WrongPassword1!',
-    newPassword: 'NewPassword2!',
-    confirmPassword: 'NewPassword2!',
+    currentPassword: 'test-wrong-password',
+    newPassword: 'test-new-password',
+    confirmPassword: 'test-new-password',
   });
 
   assert.equal(result.code, 'INVALID_CURRENT_PASSWORD');
   assert.equal((await checkUserCredentials({ name: fixture.name, password: fixture.password }))?.id, fixture.id);
-  assert.equal(await checkUserCredentials({ name: fixture.name, password: 'NewPassword2!' }), null);
+  assert.equal(await checkUserCredentials({ name: fixture.name, password: 'test-new-password' }), null);
 });
 
 test('rejects mismatched confirmation without mutating credentials', async () => {
@@ -51,8 +51,8 @@ test('rejects mismatched confirmation without mutating credentials', async () =>
   const result = await changeMockUserPassword({
     userId: fixture.id,
     currentPassword: fixture.password,
-    newPassword: 'NewPassword2!',
-    confirmPassword: 'DifferentPass3!',
+    newPassword: 'test-new-password',
+    confirmPassword: 'test-different-password',
   });
 
   assert.equal(result.code, 'PASSWORD_MISMATCH');
@@ -64,7 +64,7 @@ test('validates required fields and password strength', async (t) => {
   const cases = [
     [{ userId: fixture.id }, 'CURRENT_PASSWORD_REQUIRED'],
     [{ userId: fixture.id, currentPassword: fixture.password }, 'NEW_PASSWORD_REQUIRED'],
-    [{ userId: fixture.id, currentPassword: fixture.password, newPassword: 'NewPassword2!' }, 'CONFIRM_PASSWORD_REQUIRED'],
+    [{ userId: fixture.id, currentPassword: fixture.password, newPassword: 'test-new-password' }, 'CONFIRM_PASSWORD_REQUIRED'],
     [{ userId: fixture.id, currentPassword: fixture.password, newPassword: 'short', confirmPassword: 'short' }, 'WEAK_PASSWORD'],
     [{ userId: fixture.id, currentPassword: fixture.password, newPassword: fixture.password, confirmPassword: fixture.password }, 'PASSWORD_UNCHANGED'],
   ];
@@ -81,9 +81,9 @@ test('validates required fields and password strength', async (t) => {
 test('returns a stable error for an unknown user', async () => {
   const result = await changeMockUserPassword({
     userId: 'missing-user',
-    currentPassword: 'CurrentPass1!',
-    newPassword: 'NewPassword2!',
-    confirmPassword: 'NewPassword2!',
+    currentPassword: 'test-current-password',
+    newPassword: 'test-new-password',
+    confirmPassword: 'test-new-password',
   });
 
   assert.equal(result.status, 404);
