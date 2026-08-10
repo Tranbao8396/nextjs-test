@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import { createChangePasswordHandler } from '../pages/api/users/change-password.js';
 import {
   changeMockUserPassword,
   checkUserCredentials,
@@ -11,6 +12,25 @@ async function createFixtureUser(name) {
   const result = await createMockUser({ name, password });
   assert.equal(result.ok, true);
   return { id: result.user.id, name, password };
+}
+
+function createResponse() {
+  return {
+    statusCode: 200,
+    headers: {},
+    body: undefined,
+    setHeader(name, value) {
+      this.headers[name] = value;
+    },
+    status(code) {
+      this.statusCode = code;
+      return this;
+    },
+    json(body) {
+      this.body = body;
+      return this;
+    },
+  };
 }
 
 test('changes the authenticated mock user password', async () => {
@@ -88,4 +108,76 @@ test('returns a stable error for an unknown user', async () => {
 
   assert.equal(result.status, 404);
   assert.equal(result.code, 'USER_NOT_FOUND');
+});
+
+test('API rejects unsupported methods without reading the session', async () => {
+  let tokenRead = false;
+  const handler = createChangePasswordHandler({
+    readToken: async () => {
+      tokenRead = true;
+      return null;
+    },
+  });
+  const response = createResponse();
+
+  await handler({ method: 'GET' }, response);
+
+  assert.equal(response.statusCode, 405);
+  assert.deepEqual(response.headers.Allow, ['POST']);
+  assert.equal(response.body.code, 'METHOD_NOT_ALLOWED');
+  assert.equal(tokenRead, false);
+});
+
+test('API rejects missing and invalid sessions', async (t) => {
+  for (const [name, readToken] of [
+    ['missing token', async () => null],
+    ['token read failure', async () => { throw new Error('test-token-error'); }],
+  ]) {
+    await t.test(name, async () => {
+      const handler = createChangePasswordHandler({ readToken });
+      const response = createResponse();
+      await handler({ method: 'POST', body: {} }, response);
+      assert.equal(response.statusCode, 401);
+      assert.equal(response.body.code, 'UNAUTHENTICATED');
+    });
+  }
+});
+
+test('API binds password changes to the session subject', async () => {
+  let receivedInput;
+  const handler = createChangePasswordHandler({
+    readToken: async () => ({ sub: 'session-user' }),
+    changePassword: async (input) => {
+      receivedInput = input;
+      return { status: 200, code: 'PASSWORD_CHANGED', message: 'password changed successfully' };
+    },
+  });
+  const response = createResponse();
+
+  await handler({
+    method: 'POST',
+    body: {
+      userId: 'tampered-user',
+      currentPassword: 'test-current-password',
+      newPassword: 'test-new-password',
+      confirmPassword: 'test-new-password',
+    },
+  }, response);
+
+  assert.equal(response.statusCode, 200);
+  assert.equal(receivedInput.userId, 'session-user');
+  assert.equal('userId' in response.body, false);
+});
+
+test('API preserves stable domain error contracts', async () => {
+  const handler = createChangePasswordHandler({
+    readToken: async () => ({ sub: 'session-user' }),
+    changePassword: async () => ({ status: 400, code: 'PASSWORD_MISMATCH', message: 'new password and confirmation do not match' }),
+  });
+  const response = createResponse();
+
+  await handler({ method: 'POST', body: {} }, response);
+
+  assert.equal(response.statusCode, 400);
+  assert.deepEqual(response.body, { code: 'PASSWORD_MISMATCH', message: 'new password and confirmation do not match' });
 });
