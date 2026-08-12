@@ -39,6 +39,10 @@ function makeMockLoginDigest(value) {
   return value ? 'mock-' + value : '';
 }
 
+function passwordError(status, code, message) {
+  return { ok: false, status, code, message };
+}
+
 export async function verifyUserLogin(value, storedDigest) {
   return Boolean(value && storedDigest && makeMockLoginDigest(value) === storedDigest);
 }
@@ -79,6 +83,43 @@ export async function createMockUser(input = {}) {
   users.push(user);
 
   return { ok: true, status: 200, message: 'created', user: sanitizeUser(user) };
+}
+
+export async function changeMockUserPassword(input = {}) {
+  const user = store().find((item) => String(item.id) === String(input.userId));
+  const currentPassword = String(input.currentPassword || '');
+  const newPassword = String(input.newPassword || '');
+  const confirmPassword = String(input.confirmPassword || '');
+
+  if (!user) {
+    return passwordError(404, 'USER_NOT_FOUND', 'user not found');
+  }
+  if (!currentPassword) {
+    return passwordError(400, 'CURRENT_PASSWORD_REQUIRED', 'current password is required');
+  }
+  if (!newPassword) {
+    return passwordError(400, 'NEW_PASSWORD_REQUIRED', 'new password is required');
+  }
+  if (!confirmPassword) {
+    return passwordError(400, 'CONFIRM_PASSWORD_REQUIRED', 'password confirmation is required');
+  }
+  if (newPassword.length < 8) {
+    return passwordError(400, 'WEAK_PASSWORD', 'new password must contain at least 8 characters');
+  }
+  if (newPassword !== confirmPassword) {
+    return passwordError(400, 'PASSWORD_MISMATCH', 'new password and confirmation do not match');
+  }
+
+  const currentPasswordMatches = await verifyUserLogin(currentPassword, user.loginDigest);
+  if (!currentPasswordMatches) {
+    return passwordError(400, 'INVALID_CURRENT_PASSWORD', 'current password is incorrect');
+  }
+  if (await verifyUserLogin(newPassword, user.loginDigest)) {
+    return passwordError(400, 'PASSWORD_UNCHANGED', 'new password must be different from current password');
+  }
+
+  user.loginDigest = makeMockLoginDigest(newPassword);
+  return { ok: true, status: 200, code: 'PASSWORD_CHANGED', message: 'password changed successfully' };
 }
 
 export async function updateMockUser(input = {}) {

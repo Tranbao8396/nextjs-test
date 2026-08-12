@@ -13,17 +13,14 @@ export default function DashboardHeader() {
             <h1 className={styles.navbar_logo}>Navbar</h1>
           </Link>
 
-          {
-            session ? (
-              <>
-                <button className="btn btn-secondary" onClick={() => signOut()}>Logout</button>
-              </>
-            ) : (
-              <>
-                <button className="btn btn-primary" onClick={() => signIn()}>Login</button>
-              </>
-            )
-          }
+          {session ? (
+            <div className="d-flex gap-2">
+              <Link className="btn btn-outline-primary" href="/dashboard/change-password">Change Password</Link>
+              <button className="btn btn-secondary" onClick={() => signOut()}>Logout</button>
+            </div>
+          ) : (
+            <button className="btn btn-primary" onClick={() => signIn()}>Login</button>
+          )}
         </div>
       </nav>
     </div>
