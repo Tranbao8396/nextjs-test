@@ -127,6 +127,23 @@ export async function updateMockUser(input = {}) {
   return { ok: true, status: 200, message: 'updated', user: sanitizeUser(user) };
 }
 
+export async function changeMockUserPassword(input = {}) {
+  const user = store().find((item) => String(item.id) === String(input.id));
+  const currentPassword = String(input.currentPassword || '');
+  const newPassword = String(input.newPassword || '');
+  const confirmPassword = String(input.confirmPassword || '');
+
+  if (!user) return { ok: false, status: 404, message: 'user not found' };
+  if (!currentPassword || !newPassword || !confirmPassword) return { ok: false, status: 400, message: 'all password fields are required' };
+  if (!(await verifyUserLogin(currentPassword, user.loginDigest))) return { ok: false, status: 400, message: 'current password is incorrect' };
+  if (newPassword.length < 8) return { ok: false, status: 400, message: 'new password must contain at least 8 characters' };
+  if (newPassword !== confirmPassword) return { ok: false, status: 400, message: 'password confirmation does not match' };
+  if (newPassword === currentPassword) return { ok: false, status: 400, message: 'new password must differ from current password' };
+
+  user.loginDigest = makeMockLoginDigest(newPassword);
+  return { ok: true, status: 200, message: 'password updated' };
+}
+
 export async function deleteMockUser(id) {
   const users = store();
   const index = users.findIndex((user) => String(user.id) === String(id));
