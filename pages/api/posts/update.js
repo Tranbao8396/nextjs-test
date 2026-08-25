@@ -1,18 +1,13 @@
-export default async function handler(req, res) {
-  const body = req.body;
-  const id = body.id;
+import { handleCourseMutation } from '../../../lib/server/courseApi';
 
-  console.log(body);
-
-  const update = await fetch(`http://localhost:3001/courses/${id}`, {
+export default function handler(req, res) {
+  return handleCourseMutation(req, res, {
     method: 'POST',
-    body: JSON.stringify(body),
-    headers: { "Content-Type": "application/json" }
-  })
-
-  if (update) {
-    return res.status(200).json();
-  } else {
-    return res.status(400).json();
-  }
+    path: ({ body = {} }) => `/courses/${body.id}`,
+    successMessage: 'updated',
+    mapPayload: ({ body = {} }) => ({
+      title: body.title,
+      content: body.content,
+    }),
+  });
 }

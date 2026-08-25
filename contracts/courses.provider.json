@@ -1,0 +1,7 @@
+{
+  "version": 1,
+  "providerRepository": "Tranbao8396/nestjs-test",
+  "providerBaseCommit": "eb73a44859385f77637647761e02388afd4b68d5",
+  "providerContractPath": "contracts/courses.schema.json",
+  "consumerContractPath": "contracts/courses.schema.json"
+}

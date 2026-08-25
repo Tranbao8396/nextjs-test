@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:mcp-contract:courses:v1",
+  "title": "Course",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "title", "slug", "content", "author", "url"],
+  "properties": {
+    "id": { "type": "integer" },
+    "title": { "type": "string" },
+    "slug": { "type": "string" },
+    "content": { "type": "string" },
+    "author": { "type": "string" },
+    "url": { "type": "string" }
+  },
+  "x-rest-paths": {
+    "collection": "/courses",
+    "detail": "/courses/{slug}",
+    "mutation": "/courses/{id}"
+  }
+}

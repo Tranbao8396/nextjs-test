@@ -1,23 +1,24 @@
 import Layout from '../../components/layout';
 import Head from 'next/head';
-import { getAllPostSlug, getPostData } from '../../data/posts';
+import { getPostData } from '../../data/posts';
+import { sanitizePostContent } from '../../lib/server/postContent';
 import utilStyles from '../../styles/module/utils.module.scss';
 
-export async function getServerSidePaths() {
-  const paths = await getAllPostSlug();
-  return {
-    paths,
-    fallback: false,
-  };
-}
-
 export async function getServerSideProps({ params }) {
-  const postDetail = await getPostData(params.slug);
-  return {
-    props: {
-      postDetail,
-    },
-  };
+  try {
+    const postDetail = await getPostData(params.slug);
+    return {
+      props: {
+        postDetail: {
+          ...postDetail,
+          content: sanitizePostContent(postDetail.content),
+        },
+      },
+    };
+  } catch (error) {
+    if (error?.status === 404) return { notFound: true };
+    throw error;
+  }
 }
 
 export default function Post({ postDetail }) {

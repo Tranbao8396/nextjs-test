@@ -1,13 +1,9 @@
-export default async function handler(req, res) {
-  const { id } = req.query;
+import { handleCourseMutation } from '../../../../lib/server/courseApi';
 
-  const erase = await fetch(`http://localhost:3001/courses/${id}`, {
+export default function handler(req, res) {
+  return handleCourseMutation(req, res, {
     method: 'DELETE',
-  })
-
-  if (erase) {
-    return res.status(200).json({message: "erased"});
-  } else {
-    return res.status(400).json({message: "oops"});
-  }
+    path: ({ query }) => `/courses/${query.id}`,
+    successMessage: 'erased',
+  });
 }

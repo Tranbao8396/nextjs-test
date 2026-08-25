@@ -1,17 +1,16 @@
+import { handleCourseMutation } from '../../../lib/server/courseApi';
 
-
-export default async function handler(req, res) {
-  const body = req.body;
-
-  const create = await fetch('http://localhost:3001/courses', {
+export default function handler(req, res) {
+  return handleCourseMutation(req, res, {
     method: 'POST',
-    body: JSON.stringify(body),
-    headers: { "Content-Type": "application/json" }
-  })
-
-  if (create) {
-    return res.status(200).json({message: "created"});
-  } else {
-    return res.status(400).json({message: "oops"});
-  }
+    path: () => '/courses',
+    successMessage: 'created',
+    mapPayload: ({ body = {} }) => ({
+      title: body.title,
+      author: body.author,
+      url: body.url,
+      slug: body.slug,
+      content: body.content,
+    }),
+  });
 }
